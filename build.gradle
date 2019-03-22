@@ -1,0 +1,22 @@
+group 'com.koenraadverheyden'
+version '0.1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'com.koenraadverheyden.MyPApplet'
+
+sourceCompatibility = 1.11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
