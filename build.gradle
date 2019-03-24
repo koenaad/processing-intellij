@@ -5,18 +5,77 @@ buildscript {
     repositories {
         mavenCentral()
     }
+    dependencies {
+        classpath 'de.undercouch:gradle-download-task:3.4.3'
+    }
 }
 
 apply plugin: 'java'
-apply plugin: 'application'
+apply plugin: 'de.undercouch.download'
 
-mainClassName = 'com.koenraadverheyden.MyPApplet'
+/**
+ * Problems:
+ *  - Processing only runs on Java 8. Using a Java 11 runtime causes some weird
+ *    "java.lang.NoClassDefFoundError: com/apple/eawt/QuitHandler" errors...
+ *  - We can't assume a 'good' Java 8 runtime is available on the system.
+ *
+ * Solution:
+ *  - Download official Processing.app release and use its embedded JRE to run
+ *    the sketch.
+ */
 
-sourceCompatibility = 1.11
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+def processingVersion = '3.5.3'
+def processingZipName = "processing-$processingVersion-macosx.zip"
+def processingZip = "$buildDir/tmp/$processingZipName"
+def processingJarName = "processing-core-${processingVersion}.jar"
+
+task downloadProcessing(type: Download) {
+    src "http://download.processing.org/$processingZipName"
+    dest processingZip
+    overwrite false
+}
+
+task unpackProcessingLib(dependsOn: downloadProcessing, type: Copy) {
+    from(zipTree(processingZip)) {
+        include "**/Java/core.jar"
+        eachFile {
+            fcd -> fcd.path = processingJarName
+        }
+        includeEmptyDirs = false
+    }
+    into "$buildDir/libs"
+}
+
+compileJava.dependsOn unpackProcessingLib
+
+task unpackProcessingJre(dependsOn: downloadProcessing, type: Copy) {
+    from (zipTree(processingZip)) {
+        include "**/jre/"
+        eachFile {
+            fcd -> fcd.path = new RelativePath(true, fcd.relativePath.segments.drop(6))
+        }
+        includeEmptyDirs = false
+    }
+    into buildDir
+}
+
+task run(dependsOn: [build, unpackProcessingJre], type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.koenraadverheyden.Main'
+
+    executable = "$buildDir/jre/bin/java"
+    args "$projectDir/data"
+}
 
 repositories {
     mavenCentral()
+    flatDir {
+        dirs '$buildDir/libs'
+    }
 }
 
 dependencies {
+    implementation files("$buildDir/libs/$processingJarName")
 }
