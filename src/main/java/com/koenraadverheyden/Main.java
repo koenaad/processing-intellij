@@ -8,11 +8,11 @@ public final class Main {
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.err.println("Expected one arguments: the user directory.");
+            System.err.println("Expected exactly one argument: the user directory.");
             System.exit(1);
         }
         if (!new File(args[0]).isDirectory()) {
-            System.err.println("The supplied argument [" + args[0] + "] is not an existing directory.");
+            System.err.println("The supplied argument [" + args[0] + "] is not a valid directory.");
             System.exit(1);
         }
 
