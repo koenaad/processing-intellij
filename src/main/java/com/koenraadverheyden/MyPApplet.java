@@ -1,11 +1,18 @@
 package com.koenraadverheyden;
 
 import processing.core.PApplet;
-import processing.core.PImage;
 
 public class MyPApplet extends PApplet {
 
-    private PImage kunlaboraLogo;
+    public static PApplet getPApplet() {
+        return pApplet;
+    }
+
+    private static PApplet pApplet;
+
+    private final boolean captureFrames = false;
+
+    private BouncyImage kunlaBounce;
 
     @Override
     public void settings() {
@@ -14,14 +21,20 @@ public class MyPApplet extends PApplet {
 
     @Override
     public void setup() {
-        kunlaboraLogo = loadImage("kunlabora.png");
+        pApplet = this;
+
+        kunlaBounce = new BouncyImage("kunlabora.png", width / 2f, height / 2f, 50, 50);
     }
 
     @Override
     public void draw() {
         background(0xFF);
 
-        imageMode(CENTER);
-        image(kunlaboraLogo, width / 2f, height / 2f);
+        kunlaBounce.update();
+        kunlaBounce.draw(this);
+
+        if (captureFrames) {
+            saveFrame("frames/frame-####.gif");
+        }
     }
 }

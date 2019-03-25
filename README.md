@@ -2,16 +2,26 @@
 
 Template project to run a Processing sketch in IntelliJ IDEA. This has only been tested on macOS.
 
-### Getting started
+## Getting started
 
-Processing has some quirks which require specific dependencies and JRE's. Gradle can handle this, but the IntelliJ integrated build and run tools will fail... __Always use gradle to build and run the application.__
+#### Java 8
 
-Fetch all Processing libraries, build and run your sketch:
+You need Java 8 to run your Processing sketches. If you don't have a Java 8 runtime environment yet, easiest is to install it with brew cask:
+
+```
+brew cask install java8
+```
+
+And then make sure it is selected as the Project SDK in IntelliJ (Project Structure --> Project --> Project SDK --> Add new JDK if necessary).
+
+#### Run it!
+
+Run your sketch using gradle:
 
 ```
 ./gradlew run
 ```
 
-### Reference
+## Reference
 
-For a reference of Processing, visit: https://processing.org/reference/
+Visit the Processing reference: https://processing.org/reference/
